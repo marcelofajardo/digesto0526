@@ -29,8 +29,9 @@ class DocumentoResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Documentos';
 
-    protected static ?string $recordTitleAttribute = 'titulo';
+    protected static ?int $navigationSort = 1;
 
+    protected static ?string $recordTitleAttribute = 'titulo';
 
     public static function form(Schema $schema): Schema
     {
@@ -56,5 +57,10 @@ class DocumentoResource extends Resource
             'create' => CreateDocumento::route('/create'),
             'edit' => EditDocumento::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Documento::count();
     }
 }

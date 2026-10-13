@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DocumentoFactory extends Factory
 {
+    private static int $documentCounter = 0;
+
     /**
      * Configure the model factory.
      */
@@ -19,7 +21,7 @@ class DocumentoFactory extends Factory
     {
         return $this->afterCreating(function (Documento $documento): void {
             $documento->syncTagsWithType(
-                fake()->randomElements(['ley', 'decreto', 'resolucion', 'municipal', 'provincial'], 2),
+                fake()->randomElements(['decreto', 'resolución', 'memorandum'], 2),
                 'documento',
             );
         });
@@ -32,11 +34,14 @@ class DocumentoFactory extends Factory
      */
     public function definition(): array
     {
+        $docNumber = self::$documentCounter % 10;
+        self::$documentCounter++;
+
         return [
-            'tipo_id' => TipoDocumento::factory(),
-            'categoria_id' => Categoria::factory(),
+            'tipo_id' => fake()->randomElement(TipoDocumento::pluck('id')->toArray()),
+            'categoria_id' => fake()->randomElement(Categoria::pluck('id')->toArray()),
             'titulo' => fake()->sentence(4),
-            'ruta_doc' => 'documentos/'.fake()->uuid().'.pdf',
+            'ruta_doc' => "documentos/doc{$docNumber}.pdf",
             'descripcion' => fake()->paragraph(),
             'anio' => fake()->numberBetween(2018, (int) date('Y')),
             'numero' => (string) fake()->numberBetween(1, 9999),

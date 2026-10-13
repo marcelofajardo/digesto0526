@@ -29,6 +29,8 @@ class CategoriaResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Documentos';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $recordTitleAttribute = 'nombre';
 
     public static function form(Schema $schema): Schema
@@ -55,5 +57,10 @@ class CategoriaResource extends Resource
             'create' => CreateCategoria::route('/create'),
             'edit' => EditCategoria::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return (string) Categoria::count();
     }
 }

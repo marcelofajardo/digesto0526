@@ -22,8 +22,8 @@ class DocumentosTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->searchable(['titulo', 'descripcion'])
-            ->searchUsing(fn (Builder $query, string $search): Builder => $query->where(fn (Builder $q) => $q->where('titulo', 'like', "%{$search}%")->orWhere('descripcion', 'like', "%{$search}%")))
+            // ->searchable(['titulo', 'descripcion'])
+            // ->searchUsing(fn (Builder $query, string $search): Builder => $query->where(fn (Builder $q) => $q->where('titulo', 'like', "%{$search}%")->orWhere('descripcion', 'like', "%{$search}%")))
             ->columns([
                 Split::make([
                     Stack::make([
@@ -32,11 +32,27 @@ class DocumentosTable
                             ->sortable()
                             ->weight(FontWeight::SemiBold)
                             ->wrap(),
-                        TextColumn::make('numero')
+                        /* TextColumn::make('numero')
+
                             ->label('Año / Numero')
                             ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
                             ->sortable(['anio', 'numero'])
-                            ->color('gray'),
+                            ->searchable(['anio', 'numero'])
+                            ->color('gray'), */
+                        Split::make([
+                            TextColumn::make('anio')
+                                ->label('Año')
+                            // ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
+                                ->sortable()
+                                ->searchable()
+                                ->color('gray')->grow(false),
+                            TextColumn::make('numero')
+                                ->label('Numero')
+                                // ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
+                                ->sortable()
+                                ->searchable()
+                                ->color('gray')->grow(false),
+                        ])->from('md'),
                     ])
                         ->space(1)
                         ->columnSpan([
@@ -61,6 +77,7 @@ class DocumentosTable
                                 ->separator(','),
                         ])->from('md'),
                         TextColumn::make('descripcion')
+                            ->searchable()
                             ->label('Descripcion')
                             ->limit(120)
                             ->wrap(),

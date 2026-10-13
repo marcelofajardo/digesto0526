@@ -167,4 +167,16 @@ class RoleResource extends Resource
     {
         return FilamentShieldPlugin::get();
     }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        $roleModel = Utils::getRoleModel();
+
+        return (string) $roleModel::count();
+    }
 }

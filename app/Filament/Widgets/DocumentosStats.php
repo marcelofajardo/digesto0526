@@ -29,11 +29,11 @@ class DocumentosStats extends StatsOverviewWidget
                 ->icon('heroicon-o-document-text')
                 ->color('primary'),
             Stat::make('Documentos por categoria', $categoriaPrincipal?->documentos_count ?? 0)
-                ->description($categoriaPrincipal?->nombre ?? 'Sin categorias')
+                // ->description($categoriaPrincipal?->nombre ?? 'Sin categorias')
                 ->icon('heroicon-o-folder')
                 ->color('info'),
             Stat::make('Documentos por tipo', $tipoPrincipal?->documentos_count ?? 0)
-                ->description($tipoPrincipal?->nombre ?? 'Sin tipos')
+                // ->description($tipoPrincipal?->nombre ?? 'Sin tipos')
                 ->icon('heroicon-o-document-duplicate')
                 ->color('success'),
         ];
