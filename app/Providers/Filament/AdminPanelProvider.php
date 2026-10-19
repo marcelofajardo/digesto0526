@@ -38,6 +38,11 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/Logo-a-color-chico.png'))  // (Opcional) Agrega también tu favicon
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
+            ->navigationGroups([
+            'Documentos',      // Aparecerá primero de los grupos
+            'Usuarios',  // Aparecerá segundo
+            'Configuracion',     // Aparecerá tercero
+             ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,

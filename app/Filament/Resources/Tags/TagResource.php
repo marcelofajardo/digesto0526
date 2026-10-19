@@ -13,6 +13,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Spatie\Tags\Tag;
+use UnitEnum;
 
 class TagResource extends Resource
 {
@@ -21,6 +22,7 @@ class TagResource extends Resource
     protected static ?int $navigationSort = 4;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|UnitEnum|null $navigationGroup = 'Documentos';
 
     public static function form(Schema $schema): Schema
     {

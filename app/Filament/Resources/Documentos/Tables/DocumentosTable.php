@@ -8,6 +8,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -25,65 +26,74 @@ class DocumentosTable
             // ->searchable(['titulo', 'descripcion'])
             // ->searchUsing(fn (Builder $query, string $search): Builder => $query->where(fn (Builder $q) => $q->where('titulo', 'like', "%{$search}%")->orWhere('descripcion', 'like', "%{$search}%")))
             ->columns([
-                Split::make([
-                    Stack::make([
-                        TextColumn::make('titulo')
-                            ->searchable()
-                            ->sortable()
-                            ->weight(FontWeight::SemiBold)
-                            ->wrap(),
-                        /* TextColumn::make('numero')
+    Grid::make([
+        'default' => 1,  // En móviles se apila verticalmente (1 sola columna)
+        'lg' => 12,      // En pantallas grandes usamos la rejilla de 12 columnas
+    ])
+    ->schema([
+        
+        // 🌟 PRIMER STACK: Ocupa 4 de las 12 columnas (Más chico)
+        Stack::make([
+            TextColumn::make('titulo')
+                ->searchable()
+                ->sortable()
+                ->weight(FontWeight::SemiBold)
+                ->wrap(),
+            
+            Split::make([
+                TextColumn::make('anio')
+                    ->label('Año')
+                    ->sortable()
+                    ->searchable()
+                    ->color('gray')
+                    ->grow(false),
+                TextColumn::make('numero')
+                    ->label('Numero')
+                    ->sortable()
+                    ->searchable()
+                    ->color('gray')
+                    ->grow(false),
+            ])->from('md'),
+        ])
+        ->space(1)
+        ->columnSpan([
+            'lg' => 4, // 💡 Control del ancho aquí
+        ]),
 
-                            ->label('Año / Numero')
-                            ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
-                            ->sortable(['anio', 'numero'])
-                            ->searchable(['anio', 'numero'])
-                            ->color('gray'), */
-                        Split::make([
-                            TextColumn::make('anio')
-                                ->label('Año')
-                            // ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
-                                ->sortable()
-                                ->searchable()
-                                ->color('gray')->grow(false),
-                            TextColumn::make('numero')
-                                ->label('Numero')
-                                // ->formatStateUsing(fn (Documento $record): string => "{$record->anio} / {$record->numero}")
-                                ->sortable()
-                                ->searchable()
-                                ->color('gray')->grow(false),
-                        ])->from('md'),
-                    ])
-                        ->space(1)
-                        ->columnSpan([
-                            'xl' => 2,
-                        ]),
-                    Stack::make([
-                        Split::make([
-                            TextColumn::make('tipo.nombre')
-                                ->label('Tipo')
-                                ->sortable()
-                                ->badge()
-                                ->grow(false),
-                            TextColumn::make('categoria.nombre')
-                                ->label('Categoria')
-                                ->sortable()
-                                ->badge()
-                                ->color('gray')
-                                ->grow(false),
-                            TextColumn::make('tags.name')
-                                ->label('Tags')
-                                ->badge()
-                                ->separator(','),
-                        ])->from('md'),
-                        TextColumn::make('descripcion')
-                            ->searchable()
-                            ->label('Descripcion')
-                            ->limit(120)
-                            ->wrap(),
-                    ])->space(1),
-                ])->from('lg'),
-            ])
+        // 🌟 SEGUNDO STACK: Ocupa las 8 columnas restantes (Más grande)
+        Stack::make([
+            Split::make([
+                TextColumn::make('tipo.nombre')
+                    ->label('Tipo')
+                    ->sortable()
+                    ->badge()
+                    ->grow(false),
+                TextColumn::make('categoria.nombre')
+                    ->label('Categoria')
+                    ->sortable()
+                    ->badge()
+                    ->color('gray')
+                    ->grow(false),
+                TextColumn::make('tags.name')
+                    ->label('Tags')
+                    ->badge()
+                    ->separator(','),
+            ])->from('md'),
+            
+            TextColumn::make('descripcion')
+                ->searchable()
+                ->label('Descripcion')
+                ->limit(120)
+                ->wrap(),
+        ])
+        ->space(1)
+        ->columnSpan([
+            'lg' => 8, // 💡 Control del ancho aquí
+        ]),
+
+    ]),
+])
+
             ->defaultSort('created_at', 'desc')
             ->recordUrl(fn (Documento $record): string => Storage::disk('public')->url($record->ruta_doc))
             ->openRecordUrlInNewTab()
