@@ -51,7 +51,7 @@
     </header>
 
     <!-- Contenido principal -->
-    <main class="max-w-7xl mx-auto p-4">
+    <main class="w-full max-w-none px-4 py-4">
         @livewire(App\Filament\Widgets\PublicDocumentos::class)
     </main>
 

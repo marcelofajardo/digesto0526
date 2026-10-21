@@ -21,10 +21,10 @@ class TipoDocumentosTable
                     ->sortable(),
                 ColorColumn::make('color')
                     ->copyable(),
-                TextColumn::make('icon')
-                    ->label('Icono')
-                    ->searchable()
-                    ->toggleable(),
+                TextColumn::make('descripcion')
+                    ->label('Descripción')
+                    ->limit(60)
+                    ->wrap(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -33,8 +33,12 @@ class TipoDocumentosTable
             ->defaultSort('nombre')
             ->filters([])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar'),
+                DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

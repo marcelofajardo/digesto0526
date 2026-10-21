@@ -34,6 +34,14 @@ class DocumentoFactory extends Factory
      */
     public function definition(): array
     {
+        if (TipoDocumento::query()->count() === 0) {
+            TipoDocumento::factory()->count(3)->create();
+        }
+
+        if (Categoria::query()->count() === 0) {
+            Categoria::factory()->count(3)->create();
+        }
+
         $docNumber = self::$documentCounter % 10;
         self::$documentCounter++;
 

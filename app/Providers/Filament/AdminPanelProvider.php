@@ -11,6 +11,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -33,16 +34,19 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->assets([
+                Css::make('documentos-table', resource_path('css/filament/admin/documentos-table.css')),
+            ])
             ->brandLogo(asset('images/logo-a-color.png')) // Ruta de tu imagen
             ->brandLogoHeight('2.5rem')             // Ajusta la altura a tu gusto
             ->favicon(asset('images/Logo-a-color-chico.png'))  // (Opcional) Agrega también tu favicon
 
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->navigationGroups([
-            'Documentos',      // Aparecerá primero de los grupos
-            'Usuarios',  // Aparecerá segundo
-            'Configuracion',     // Aparecerá tercero
-             ])
+                'Documentos',      // Aparecerá primero de los grupos
+                'Usuarios',  // Aparecerá segundo
+                'Configuracion',     // Aparecerá tercero
+            ])
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,

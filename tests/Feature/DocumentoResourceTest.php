@@ -1,8 +1,16 @@
 <?php
 
+use App\Filament\Resources\Categorias\Pages\ListCategorias;
+use App\Filament\Resources\Categorias\Schemas\CategoriaForm;
+use App\Filament\Resources\Categorias\Tables\CategoriasTable;
 use App\Filament\Resources\Documentos\Pages\CreateDocumento;
 use App\Filament\Resources\Documentos\Pages\EditDocumento;
 use App\Filament\Resources\Documentos\Pages\ListDocumentos;
+use App\Filament\Resources\Documentos\Tables\DocumentosTable;
+use App\Filament\Resources\TipoDocumentos\Pages\ListTipoDocumentos;
+use App\Filament\Resources\TipoDocumentos\Schemas\TipoDocumentoForm;
+use App\Filament\Resources\TipoDocumentos\Tables\TipoDocumentosTable;
+use App\Filament\Widgets\PublicDocumentos;
 use App\Models\Categoria;
 use App\Models\Documento;
 use App\Models\TipoDocumento;
@@ -10,12 +18,23 @@ use App\Models\User;
 use App\Services\DocumentSummaryService;
 use App\Services\DocumentTextExtractor;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Field;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Filament\Support\Exceptions\Halt;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema as DatabaseSchema;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
 use Livewire\Livewire;
 use Spatie\Tags\Tag;
 
@@ -34,6 +53,107 @@ it('puede ver el listado de documentos en filament', function (): void {
 
     Livewire::test(ListDocumentos::class)
         ->assertCanSeeTableRecords($documentos);
+});
+
+it('usa el color del tipo de documento en el badge de tipo', function (): void {
+    $tipo = TipoDocumento::factory()->create(['color' => '#123456']);
+    $documento = Documento::factory()->create(['tipo_id' => $tipo->id]);
+    $column = DocumentosTable::configure(Table::make(new ListDocumentos))
+        ->getColumn('tipo.nombre')
+        ->record($documento);
+
+    expect($column->getColor($tipo->nombre))->toBe(Color::hex($tipo->color));
+});
+
+it('usa el color de la categoría en el badge de categoría', function (): void {
+    $categoria = Categoria::factory()->create(['color' => '#654321']);
+    $documento = Documento::factory()->create(['categoria_id' => $categoria->id]);
+    $column = DocumentosTable::configure(Table::make(new ListDocumentos))
+        ->getColumn('categoria.nombre')
+        ->record($documento);
+
+    expect($column->getColor($categoria->nombre))->toBe(Color::hex($categoria->color));
+});
+
+it('expone nombre, color y descripción en los formularios y listados de metadatos', function (): void {
+    $livewire = new class extends Component implements HasSchemas
+    {
+        use InteractsWithSchemas;
+    };
+    $categoriaFields = collect(CategoriaForm::configure(Schema::make($livewire))->getFlatFields())
+        ->keyBy(fn (Field $field): ?string => $field->getName());
+    $tipoFields = collect(TipoDocumentoForm::configure(Schema::make($livewire))->getFlatFields())
+        ->keyBy(fn (Field $field): ?string => $field->getName());
+    $categoriasTable = CategoriasTable::configure(Table::make(new ListCategorias));
+    $tiposTable = TipoDocumentosTable::configure(Table::make(new ListTipoDocumentos));
+
+    expect($categoriaFields->keys()->all())->toContain('nombre', 'color', 'descripcion')
+        ->and($tipoFields->keys()->all())->toContain('nombre', 'color', 'descripcion')
+        ->and($categoriasTable->getColumn('color'))->toBeInstanceOf(ColorColumn::class)
+        ->and($categoriasTable->getColumn('descripcion'))->toBeInstanceOf(TextColumn::class)
+        ->and($tiposTable->getColumn('color'))->toBeInstanceOf(ColorColumn::class)
+        ->and($tiposTable->getColumn('descripcion'))->toBeInstanceOf(TextColumn::class)
+        ->and($tiposTable->getColumn('icon'))->toBeNull()
+        ->and(DatabaseSchema::hasColumn('categorias', 'color'))->toBeTrue()
+        ->and(DatabaseSchema::hasColumn('tipo_documentos', 'descripcion'))->toBeTrue()
+        ->and(DatabaseSchema::hasColumn('tipo_documentos', 'icon'))->toBeFalse();
+});
+
+it('guarda color y descripción para categorías y tipos de documento', function (): void {
+    $categoria = Categoria::factory()->create([
+        'color' => '#123456',
+        'descripcion' => 'Categoría de prueba',
+    ]);
+    $tipo = TipoDocumento::factory()->create([
+        'color' => '#654321',
+        'descripcion' => 'Tipo de prueba',
+    ]);
+
+    expect($categoria->refresh()->color)->toBe('#123456')
+        ->and($categoria->descripcion)->toBe('Categoría de prueba')
+        ->and($tipo->refresh()->color)->toBe('#654321')
+        ->and($tipo->descripcion)->toBe('Tipo de prueba')
+        ->and(Categoria::query()->create(['nombre' => 'Categoría sin color'])->color)->toBe('#f59e0b')
+        ->and(TipoDocumento::query()->create(['nombre' => 'Tipo sin color'])->color)->toBe('#f59e0b');
+});
+
+it('expone los filtros de título, año, tipo y categoría en la tabla', function (): void {
+    Livewire::test(ListDocumentos::class)
+        ->assertTableFilterExists('titulo')
+        ->assertTableFilterExists('anio')
+        ->assertTableFilterExists('tipo')
+        ->assertTableFilterExists('categoria');
+});
+
+it('agrupa número y año en una columna y comparte ambos filtros con la tabla pública', function (): void {
+    $table = DocumentosTable::configure(Table::make(new ListDocumentos));
+    $numberAndYearGrid = collect($table->getFiltersFormSchema())
+        ->first(fn ($component): bool => $component instanceof Grid);
+    $widget = new PublicDocumentos;
+    $publicTable = $widget->table(Table::make($widget));
+
+    expect($numberAndYearGrid)->toBeInstanceOf(Grid::class)
+        ->and($numberAndYearGrid->getDefaultChildComponents())->toHaveCount(2)
+        ->and($numberAndYearGrid->getAllColumns()['lg'])->toBe(2)
+        ->and($numberAndYearGrid->getColumnSpan()['default'])->toBe(1)
+        ->and($publicTable->getColumn('numero'))->not->toBeNull()
+        ->and($publicTable->getFilter('numero'))->not->toBeNull()
+        ->and($publicTable->getFilter('anio'))->not->toBeNull();
+});
+
+it('oculta la acción de resetear filtros solo en la tabla de documentos', function (): void {
+    $table = DocumentosTable::configure(Table::make(new ListDocumentos));
+
+    expect($table->getExtraAttributes()['class'])->toContain('documentos-table');
+});
+
+it('muestra la descripción completa al pasar sobre la tabla pública', function (): void {
+    $widget = new PublicDocumentos;
+    $table = $widget->table(Table::make($widget));
+    $description = str_repeat('Descripción completa del documento. ', 8);
+
+    expect($widget->getColumnSpan())->toBe('full')
+        ->and($table->getColumn('descripcion')->getTooltip($description))->toBe($description);
 });
 
 it('puede crear un documento', function (): void {

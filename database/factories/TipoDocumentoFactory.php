@@ -13,11 +13,11 @@ class TipoDocumentoFactory extends Factory
     private static int $tipoCounter = 0;
 
     private static array $tiposPredifinidos = [
-        ['nombre' => 'Decreto', 'color' => '#FF6B6B', 'icon' => 'heroicon-o-document-text'],
-        ['nombre' => 'Resolución', 'color' => '#4ECDC4', 'icon' => 'heroicon-o-scale'],
-        ['nombre' => 'Memorandum', 'color' => '#45B7D1', 'icon' => 'heroicon-o-clipboard-document-list'],
-        ['nombre' => 'Acuerdo', 'color' => '#FFA07A', 'icon' => 'heroicon-o-document-text'],
-        ['nombre' => 'Ordenanza', 'color' => '#98D8C8', 'icon' => 'heroicon-o-scale'],
+        ['nombre' => 'Decreto', 'color' => '#FF6B6B', 'descripcion' => 'Disposición dictada por una autoridad ejecutiva.'],
+        ['nombre' => 'Resolución', 'color' => '#4ECDC4', 'descripcion' => 'Decisión formal emitida por una autoridad.'],
+        ['nombre' => 'Memorandum', 'color' => '#45B7D1', 'descripcion' => 'Comunicación administrativa interna.'],
+        ['nombre' => 'Acuerdo', 'color' => '#FFA07A', 'descripcion' => 'Decisión adoptada de común acuerdo.'],
+        ['nombre' => 'Ordenanza', 'color' => '#98D8C8', 'descripcion' => 'Norma aprobada por una autoridad local.'],
     ];
 
     /**

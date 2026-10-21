@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categorias\Schemas;
 
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -13,13 +14,16 @@ class CategoriaForm
     {
         return $schema
             ->components([
-                Section::make('Categoria')
+                Section::make('Categoría')
                     ->schema([
                         TextInput::make('nombre')
                             ->required()
                             ->maxLength(255),
+                        ColorPicker::make('color')
+                            ->required()
+                            ->default('#f59e0b'),
                         Textarea::make('descripcion')
-                            ->label('Descripcion')
+                            ->label('Descripción')
                             ->maxLength(2000)
                             ->columnSpanFull(),
                     ])

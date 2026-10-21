@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TipoDocumentos\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -21,11 +22,10 @@ class TipoDocumentoForm
                         ColorPicker::make('color')
                             ->required()
                             ->default('#f59e0b'),
-                        TextInput::make('icon')
-                            ->label('Icono')
-                            ->required()
-                            ->maxLength(255)
-                            ->default('heroicon-o-document-text'),
+                        Textarea::make('descripcion')
+                            ->label('Descripción')
+                            ->maxLength(2000)
+                            ->columnSpanFull(),
                     ])
                     ->columns(2),
             ]);

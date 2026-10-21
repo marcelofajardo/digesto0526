@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nombre', 'descripcion'])]
+#[Fillable(['nombre', 'color', 'descripcion'])]
 class Categoria extends Model
 {
     /** @use HasFactory<CategoriaFactory> */
     use HasFactory;
+
+    protected $attributes = [
+        'color' => '#f59e0b',
+    ];
 
     /**
      * @return HasMany<Documento, $this>

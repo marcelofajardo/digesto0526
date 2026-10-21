@@ -13,9 +13,9 @@ class CategoriaSeeder extends Seeder
     public function run(): void
     {
         collect([
-            ['nombre' => 'General', 'descripcion' => 'Categoria general para documentos.'],
-            ['nombre' => 'Administrativa', 'descripcion' => 'Documentos administrativos.'],
-            ['nombre' => 'Normativa', 'descripcion' => 'Documentos normativos.'],
+            ['nombre' => 'General', 'color' => '#2563eb', 'descripcion' => 'Categoria general para documentos.'],
+            ['nombre' => 'Administrativa', 'color' => '#16a34a', 'descripcion' => 'Documentos administrativos.'],
+            ['nombre' => 'Normativa', 'color' => '#f59e0b', 'descripcion' => 'Documentos normativos.'],
         ])->each(fn (array $categoria): Categoria => Categoria::query()->firstOrCreate(
             ['nombre' => $categoria['nombre']],
             $categoria,

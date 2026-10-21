@@ -13,9 +13,9 @@ class TipoDocumentoSeeder extends Seeder
     public function run(): void
     {
         collect([
-            ['nombre' => 'Ley', 'color' => '#2563eb', 'icon' => 'heroicon-o-scale'],
-            ['nombre' => 'Decreto', 'color' => '#16a34a', 'icon' => 'heroicon-o-document-text'],
-            ['nombre' => 'Resolucion', 'color' => '#f59e0b', 'icon' => 'heroicon-o-clipboard-document-list'],
+            ['nombre' => 'Ley', 'color' => '#2563eb', 'descripcion' => 'Norma jurídica aprobada por una autoridad legislativa.'],
+            ['nombre' => 'Decreto', 'color' => '#16a34a', 'descripcion' => 'Disposición dictada por una autoridad ejecutiva.'],
+            ['nombre' => 'Resolucion', 'color' => '#f59e0b', 'descripcion' => 'Decisión formal emitida por una autoridad.'],
         ])->each(fn (array $tipo): TipoDocumento => TipoDocumento::query()->firstOrCreate(
             ['nombre' => $tipo['nombre']],
             $tipo,

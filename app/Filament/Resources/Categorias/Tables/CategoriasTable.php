@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -18,8 +19,10 @@ class CategoriasTable
                 TextColumn::make('nombre')
                     ->searchable()
                     ->sortable(),
+                ColorColumn::make('color')
+                    ->copyable(),
                 TextColumn::make('descripcion')
-                    ->label('Descripcion')
+                    ->label('Descripción')
                     ->limit(60)
                     ->wrap(),
                 TextColumn::make('created_at')
@@ -30,8 +33,12 @@ class CategoriasTable
             ->defaultSort('nombre')
             ->filters([])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Editar'),
+                DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
